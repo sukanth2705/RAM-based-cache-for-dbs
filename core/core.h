@@ -7,6 +7,7 @@ namespace core {
     enum TYPES {
         INT,
         FLOAT,
+        STRING,
     };
 
     class Record {
