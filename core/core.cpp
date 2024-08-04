@@ -2,12 +2,14 @@
 #include<iostream>
 
 namespace core{
-    Int::Int(int data):data(data){}
+    Record::Record(TYPES t):t(t){}
+
+    Int::Int(int data):data(data),Record(INT){}
     int Int::get() {return this->data;}
     void Int::set(int val) {this->data=val;}
     int Int::test(){return this->data;}
 
-    Float::Float(float data):data(data){}
+    Float::Float(float data):data(data),Record(FLOAT){}
     float Float::get() {return this->data;}
     void Float::set(float val) {this->data=val;}
     float Float::test(){return this->data;}
