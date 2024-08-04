@@ -9,11 +9,16 @@ namespace core {
     enum TYPES {
         INT,
         FLOAT,
+        STRING,
     };
 
     class Record {
         TYPES t;
         int ttl;
+
+        protected:
+
+        Record(TYPES );
     };
 
     class Int: public Record {
