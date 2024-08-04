@@ -29,6 +29,11 @@ namespace core {
         float data;
         float get();
         void set(float );
+
+        public:
+
+        Float(float );
+        float test();
     };
 
     class String: public Record {
