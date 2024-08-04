@@ -9,10 +9,14 @@ namespace core {
     };
 
     class Record {
-        private:
-            TYPES t;
-            int ttl;
+        TYPES t;
+        int ttl;
     };
 
+    class Int: public Record {
+        int data;
+        int get();
+        void set(int );
+    };
 }
 #endif
