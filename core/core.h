@@ -1,7 +1,7 @@
 #ifndef CORE_H
  
 #define CORE_H
-#include <string.h>
+#include <string>
  
 namespace core {
     enum TYPES {
@@ -37,6 +37,14 @@ namespace core {
     };
 
     class String: public Record {
+        std::string data;
+        std::string get();
+        void set(std::string );
+
+        public:
+
+        String(std::string );
+        std::string test();
     };
 
 }
