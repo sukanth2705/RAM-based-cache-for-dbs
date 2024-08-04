@@ -1,8 +1,10 @@
-#ifndef CORE_H
- 
-#define CORE_H
+
+#ifndef _GLIBCXX_STRING
 #include <string>
- 
+#endif
+
+#ifndef CORE_H 
+#define CORE_H
 namespace core {
     enum TYPES {
         INT,
