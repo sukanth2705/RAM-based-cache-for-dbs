@@ -1,6 +1,7 @@
 #ifndef CORE_H
  
 #define CORE_H
+#include <string.h>
  
 namespace core {
     enum TYPES {
@@ -27,7 +28,11 @@ namespace core {
     class Float: public Record {
         float data;
         float get();
-        void set(int );
+        void set(float );
     };
+
+    class String: public Record {
+    };
+
 }
 #endif
