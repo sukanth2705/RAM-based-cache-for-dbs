@@ -18,5 +18,11 @@ namespace core {
         int get();
         void set(int );
     };
+
+    class Float: public Record {
+        float data;
+        float get();
+        void set(int );
+    };
 }
 #endif
