@@ -9,7 +9,6 @@ This project implements a cache system using RAM to optimize and speed up DBMS o
 ````bash
    cd build
    make
-```
 
 ## Building the Test executable
 
@@ -17,11 +16,10 @@ This project implements a cache system using RAM to optimize and speed up DBMS o
 ```bash
     cd ..
     make
-```
+
 ### Running the test
 
 1. For Running the tests:
     
 ```bash
     make run
-```
