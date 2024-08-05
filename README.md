@@ -6,18 +6,22 @@ This project implements a cache system using RAM to optimize and speed up DBMS o
 
 1. Navigate to the build directory and run the makefile:
    
-bash
+````bash
    cd build
    make
+```
 
 ## Building the Test executable
 
 1. Next go to the parent directory and run the makefile for building the test executable:
-bash
+```bash
     cd ..
     make
+```
+### Running the test
 
 1. For Running the tests:
     
-bash
+```bash
     make run
+```
