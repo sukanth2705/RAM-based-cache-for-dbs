@@ -1,31 +1,60 @@
 #include "core.h"
-#include<iostream>
+#include <cxxabi.h>
+#include <iostream>
+#include <string>
+#include <typeinfo>
 
-namespace core{
-    Record::Record(TYPES t):t(t){}
+namespace core
+{
+    template <typename T>
+    Record<T>::Record(T data) : data(data) {}
 
-    Int::Int(int data):data(data),Record(INT){}
-    int Int::get() {return this->data;}
-    void Int::set(int val) {this->data=val;}
-    int Int::test(){return this->data;}
+    template <typename T>
+    T Record<T>::get() const { return data; }
 
-    Float::Float(float data):data(data),Record(FLOAT){}
-    float Float::get() {return this->data;}
-    void Float::set(float val) {this->data=val;}
-    float Float::test(){return this->data;}
+    template <typename T>
+    void Record<T>::set(T val) { data = val; }
 
-    String::String(std::string data):data(data),Record(STRING){}
-    std::string String::get() {return this->data;}
-    void String::set(std::string val) {this->data=val;}
-    std::string String::test(){return this->data;}
+    template <typename T>
+    std::string Record<T>::getTypeName() const
+    {
+        int status;
+        char *realname = abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
+        std::string typeName(realname);
+        std::free(realname);
+        return typeName;
+    }
+
+    BaseRecord *Cache::get(std::string key)
+    {
+        auto it = table.find(key);
+        if (it != table.end())
+        {
+            return it->second;
+        }
+        return nullptr;
+    }
+
+    void Cache::set(std::string key, BaseRecord *record)
+    {
+        table[key] = record;
+    }
+
+    template class Record<int>;
+    template class Record<float>;
+    template class Record<std::string>;
+    template class Record<int *>;
 }
 
-int main(){
-    core::Int v(4);
-    core::Float f(3.5);
-    core::String s("abcd");
-    std::cout<<v.test()<<std::endl;
-    std::cout<<f.test()<<std::endl;
-    std::cout<<s.test()<<std::endl;
+int main()
+{
+    std::string a = "abcd";
+    core::Record<std::string> v(a);
+    std::cout << v.getTypeName() << std::endl;
+    core::Cache cache;
+    cache.set("abc", &v);
+    core::Record<std::string> *val = dynamic_cast<core::Record<std::string> *>(cache.get("abc"));
+    std::cout << val->get() << std::endl;
+    std::cout << val->getTypeName() << std::endl;
     return 0;
 }

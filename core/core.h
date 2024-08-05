@@ -1,55 +1,38 @@
-#ifndef CORE_H 
+#ifndef CORE_H
+
 #define CORE_H
-#ifndef _GLIBCXX_STRING
 #include <string>
-#endif
-namespace core {
-    enum TYPES {
-        INT,
-        FLOAT,
-        STRING,
-    };
+#include <map>
 
-    class Record {
-        TYPES t;
+namespace core
+{
+    class BaseRecord
+    {
+    public:
+        virtual ~BaseRecord() = default;
+        virtual std::string getTypeName() const = 0;
+    };  
+    
+    template <typename T>
+    class Record : public BaseRecord
+    {
         int ttl;
+        T data;
 
-        protected:
-
-        Record(TYPES );
+    public:
+        Record(T);
+        T get() const;
+        void set(T);
+        std::string getTypeName() const override;
     };
 
-    class Int: public Record {
-        int data;
-        int get();
-        void set(int );
+    class Cache
+    {
+        std::map<std::string, BaseRecord *> table;
 
-        public:
-
-        Int(int );
-        int test();
-    };
-
-    class Float: public Record {
-        float data;
-        float get();
-        void set(float );
-
-        public:
-
-        Float(float );
-        float test();
-    };
-
-    class String: public Record {
-        std::string data;
-        std::string get();
-        void set(std::string );
-
-        public:
-
-        String(std::string );
-        std::string test();
+    public:
+        BaseRecord *get(std::string);
+        void set(std::string, BaseRecord *);
     };
 
 }
