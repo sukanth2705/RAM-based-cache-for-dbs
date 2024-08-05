@@ -45,16 +45,3 @@ namespace core
     template class Record<std::string>;
     template class Record<int *>;
 }
-
-int main()
-{
-    std::string a = "abcd";
-    core::Record<std::string> v(a);
-    std::cout << v.getTypeName() << std::endl;
-    core::Cache cache;
-    cache.set("abc", &v);
-    core::Record<std::string> *val = dynamic_cast<core::Record<std::string> *>(cache.get("abc"));
-    std::cout << val->get() << std::endl;
-    std::cout << val->getTypeName() << std::endl;
-    return 0;
-}
