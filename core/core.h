@@ -1,6 +1,6 @@
 #ifndef CORE_H
-
 #define CORE_H
+
 #include <string>
 #include <map>
 
@@ -16,10 +16,10 @@ namespace core
     template <typename T>
     class Record : public BaseRecord
     {
-        int ttl;
         T data;
 
     public:
+        int ttl;
         Record(T);
         T get() const;
         void set(T);
@@ -28,11 +28,10 @@ namespace core
 
     class Cache
     {
-        std::map<std::string, BaseRecord *> table;
-
     public:
         BaseRecord *get(std::string);
         void set(std::string, BaseRecord *);
+        std::map<std::string, BaseRecord *> table;
     };
 
 }
