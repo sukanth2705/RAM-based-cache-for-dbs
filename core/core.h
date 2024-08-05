@@ -11,7 +11,8 @@ namespace core
     public:
         virtual ~BaseRecord() = default;
         virtual std::string getTypeName() const = 0;
-    };
+    };  
+    
     template <typename T>
     class Record : public BaseRecord
     {
