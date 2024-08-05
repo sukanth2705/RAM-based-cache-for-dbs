@@ -1,12 +1,23 @@
-Implemented a cache using RAM for faster DBMS operations
+# Cache Implementation Using RAM for Faster DBMS Operations
 
-Building the Librbary:\n
-  cd build\n
-  make\n
+This project implements a cache system using RAM to optimize and speed up DBMS operations.
 
-Building the test executable:\n
-  Come to the root directory\n
-  make\n
+## Building the Library
 
-Running the test:\n
-  make run
+1. Navigate to the build directory and run the makefile:
+   
+bash
+   cd build
+   make
+
+## Building the Test executable
+
+1. Next go to the parent directory and run the makefile for building the test executable:
+bash
+    cd ..
+    make
+
+1. For Running the tests:
+    
+bash
+    make run
