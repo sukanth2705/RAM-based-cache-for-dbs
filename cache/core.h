@@ -1,6 +1,7 @@
 #ifndef CORE_H
 #define CORE_H
 
+#include "flags.h"
 #include <chrono>
 #include <string>
 #include <map>
@@ -18,10 +19,12 @@ template <typename T>
 class Record : public BaseRecord
 {
     T data;
+
 public:
     int ttl;
     std::chrono::time_point<std::chrono::system_clock> timestamp;
     Record(T);
+    Record(T, int);
     T get() const;
     void set(T);
     std::string getTypeName() const override;
@@ -35,7 +38,7 @@ public:
     int num_keys;
     BaseRecord *get(std::string);
     void set(std::string, BaseRecord *);
-    Cache(int);
+    Cache();
 };
 
 #endif
