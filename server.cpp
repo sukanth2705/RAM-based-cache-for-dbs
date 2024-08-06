@@ -8,47 +8,49 @@
 int opCount = 0;
 int lock = 1;
 std::string operation = "get";
-std::string logErrorMessage = "Unable to open log files";
+std::string logErrorMessage = "Unable to open log files"; 
 int logFlush = 2;
+
+bool fileChecker(std::ofstream &fileObject) //function to check if file object is opened properly
+{
+    if (fileObject) return true;
+    else
+    {
+        std::cerr << logErrorMessage;
+        fileObject.close();
+        return false;
+    }
+}
 
 void persistance(Cache* c)
 {
     std::cout<<"hello3\n";
     std::ofstream differentialLog, tableCaptureLog;
-    differentialLog.open("../../logs/differentiallogs.txt", std::ios::app);
-    tableCaptureLog.open("../../logs/tablecapturelog.txt");
-    if (!differentialLog)
+    if (opCount+1 <= logFlush)
     {
-        std::cerr << logErrorMessage;
+        differentialLog.open("../../logs/differentiallogs.txt", std::ios::app);//opening differentiallogs.txt to append command
+        fileChecker(differentialLog);
+        differentialLog << opCount << "," << operation << '\n';
+        opCount++;
         differentialLog.close();
-        return;
     }
-    if (!tableCaptureLog)
+    else
     {
-        std::cerr << logErrorMessage;
+        differentialLog.open("../../logs/differentiallogs.txt"); //the following 3 lines clear differentiallogs.txt by opening in write mode and immediately closing
+        fileChecker(differentialLog);
+        differentialLog.close();
+        tableCaptureLog.open("../../logs/tablecapturelog.txt");//opening tablecapturelog.txt and then copying table
+        fileChecker(tableCaptureLog);
+        for (auto it = (*c).table.begin(); it != (*c).table.end(); it++)
+        {
+            tableCaptureLog << it->first << ' ' << it->second << '\n';
+        }
+        opCount = 0;
         tableCaptureLog.close();
-        return;
     }
-    while (1)
-    {
-        if (opCount+1 <= logFlush)
-        {
-            differentialLog << opCount << "," << operation << '\n';
-            opCount++;
-        }
-        else
-        {
-            for (auto it = (*c).table.begin(); it != (*c).table.end(); it++)
-            {
-                tableCaptureLog << it->first << ' ' << it->second << '\n';
-            }
-            opCount = 0;
-            break;
-        }
-    }
-    differentialLog.close();
-    tableCaptureLog.close();
 }
+    
+    
 
 void cleaner()
 {
