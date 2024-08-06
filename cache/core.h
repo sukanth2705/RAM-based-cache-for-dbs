@@ -1,8 +1,11 @@
 #ifndef CORE_H
 #define CORE_H
 
+#include <chrono>
 #include <string>
 #include <map>
+#include <vector>
+#include <set>
 
 class BaseRecord
 {
@@ -15,9 +18,9 @@ template <typename T>
 class Record : public BaseRecord
 {
     T data;
-
 public:
     int ttl;
+    std::chrono::time_point<std::chrono::system_clock> timestamp;
     Record(T);
     T get() const;
     void set(T);
@@ -27,9 +30,12 @@ public:
 class Cache
 {
 public:
+    std::map<std::string, BaseRecord *> table;
+    std::set<std::string> keys;
+    int num_keys;
     BaseRecord *get(std::string);
     void set(std::string, BaseRecord *);
-    std::map<std::string, BaseRecord *> table;
+    Cache(int);
 };
 
 #endif
