@@ -11,7 +11,7 @@ std::string operation = "get";
 std::string logErrorMessage = "Unable to open log files";
 int logFlush = 2;
 
-void persistance(core::Cache* c)
+void persistance(Cache* c)
 {
     std::cout<<"hello3\n";
     std::ofstream differentialLog, tableCaptureLog;
@@ -65,7 +65,7 @@ void master()
     return ;
 }
 
-void initialize(core::Cache* c){
+void initialize(Cache* c){
     std::thread master_th(master);
     std::thread persistance_th(persistance,c);
     std::thread cleaner_th(cleaner);
