@@ -1,2 +1,2 @@
-/test
-/server
+# Ignore build directory
+build/
