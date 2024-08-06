@@ -1,11 +1,16 @@
 #include "cache/core.h"
+#include <chrono>
 #include <cxxabi.h>
 #include <iostream>
 #include <string>
 #include <typeinfo>
 
 template <typename T>
-Record<T>::Record(T data) : data(data) {}
+Record<T>::Record(T data) : data(data)
+{
+    ttl = 5;
+    timestamp = std::chrono::system_clock::now();
+}
 
 template <typename T>
 T Record<T>::get() const { return data; }
@@ -23,6 +28,8 @@ std::string Record<T>::getTypeName() const
     return typeName;
 }
 
+Cache::Cache(int num_keys) : num_keys(num_keys) {}
+
 BaseRecord *Cache::get(std::string key)
 {
     auto it = table.find(key);
@@ -36,6 +43,8 @@ BaseRecord *Cache::get(std::string key)
 void Cache::set(std::string key, BaseRecord *record)
 {
     table[key] = record;
+    keys.insert(key);
+    num_keys++;
 }
 
 template class Record<int>;
