@@ -1,4 +1,6 @@
 #include "cache/server.h"
+#include "cache/flags.h"
+#include "cache/core.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -8,10 +10,7 @@
 #include <thread>
 
 int opCount = 0;
-int lock = 1;
-std::string operation = "get";
-std::string logErrorMessage = "Unable to open log files"; 
-int logFlush = 2;
+std::string operation;
 
 std::vector<std::string> randomSample(Cache *c)
 {
@@ -39,7 +38,7 @@ bool fileChecker(std::ofstream &fileObject) //function to check if file object i
     if (fileObject) return true;
     else
     {
-        std::cerr << logErrorMessage;
+        std::cerr <<"Unable to open log file";
         fileObject.close();
         return false;
     }
@@ -48,9 +47,9 @@ bool fileChecker(std::ofstream &fileObject) //function to check if file object i
 void persistance(Cache* c)
 {
     std::ofstream differentialLog, tableCaptureLog;
-    if (opCount+1 <= logFlush)
+    if (opCount+1 <= FLAGS_operations_before_tablecapture)
     {
-        differentialLog.open("../../logs/differentiallogs.txt", std::ios::app);//opening differentiallogs.txt to append command
+        differentialLog.open(FLAGS_differentiallog_path, std::ios::app);//opening differentiallogs.txt to append command
         fileChecker(differentialLog);
         differentialLog << opCount << "," << operation << '\n';
         opCount++;
@@ -58,10 +57,10 @@ void persistance(Cache* c)
     }
     else
     {
-        differentialLog.open("../../logs/differentiallogs.txt"); //the following 3 lines clear differentiallogs.txt by opening in write mode and immediately closing
+        differentialLog.open(FLAGS_differentiallog_path); //the following 3 lines clear differential.log by opening in write mode and immediately closing
         fileChecker(differentialLog);
         differentialLog.close();
-        tableCaptureLog.open("../../logs/tablecapturelog.txt");//opening tablecapturelog.txt and then copying table
+        tableCaptureLog.open(FLAGS_tablecapturelog_path);//opening tablecapture.log and then copying table
         fileChecker(tableCaptureLog);
         for (auto it = (*c).table.begin(); it != (*c).table.end(); it++)
         {
@@ -94,6 +93,10 @@ void cleaner(Cache *c)
             }
         }
     }
+}
+
+void reconstructor(int &errorcode){
+
 }
 
 void master(Cache *c)
