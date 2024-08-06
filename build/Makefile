@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -fPIC -Wall -Wextra
 LDFLAGS = -shared
 LIB_NAME = libcache.so
-SRC = ../core/core.cpp
+SRC = ../core.cpp
 OBJ = core.o
 
 # Default target

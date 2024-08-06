@@ -21,7 +21,6 @@ void persistance(){
         differentialLog.open("logs\\differentiallogs.txt",std::ios::app);
         if (differentialLog){
             differentialLog<<opCount<<","<<operation<<'\n';
-            differentialLog.close();
         }
         else {
             std::cerr<<logErrorMessage;
@@ -53,8 +52,7 @@ void persistance(){
         differentialLog.close();
         opCount=0;
     }
-    
-    lock=0;  
+     
 }
 
 void cleaner(){
