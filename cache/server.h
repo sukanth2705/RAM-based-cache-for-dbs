@@ -3,9 +3,9 @@
 
 #include "core.h"
 
-void persistance(core::Cache *);
+void persistance(Cache *);
 void cleaner();
 void master();
-void initialize(core::Cache *);
+void initialize(Cache *);
 
 #endif
