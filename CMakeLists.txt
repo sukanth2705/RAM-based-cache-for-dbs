@@ -9,21 +9,32 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Add the source file for the shared library
+# Add the source files for the shared library
 set(SOURCES
     core.cpp
+    server.cpp
 )
 
 # Add the header file directory (optional, helps with IDEs)
 set(HEADERS
     cache/core.h
+    cache/server.h
 )
 
 # Create the shared library
 add_library(Mycache SHARED ${SOURCES})
 
-# Specify include directories
+# Specify include directories for the library
 target_include_directories(Mycache PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
+
+# Add the main source file
+add_executable(my_own_redis main.cpp)
+
+# Specify include directories for the executable
+target_include_directories(my_own_redis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
+
+# Link the executable with the Mycache library
+target_link_libraries(my_own_redis PRIVATE Mycache)
 
 # Platform-specific settings
 if(WIN32)
@@ -41,7 +52,7 @@ else()
     )
 endif()
 
-# Install the shared library and headers (optional)
+# Install the shared library and headers
 install(TARGETS Mycache
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -51,4 +62,5 @@ install(TARGETS Mycache
 install(FILES ${HEADERS} DESTINATION include/cache)
 
 # Print a message indicating successful configuration
-message(STATUS "Configured Cache library")
+message(STATUS "Configured Cache library and application")
+
