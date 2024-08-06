@@ -52,6 +52,11 @@ else()
     )
 endif()
 
+# Find and link the threading library
+find_package(Threads REQUIRED)
+target_link_libraries(my_own_redis PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(Mycache PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+
 # Install the shared library and headers
 install(TARGETS Mycache
     LIBRARY DESTINATION lib

@@ -1,5 +1,4 @@
 #include "cache/server.h"
-#include "cache/core.h"
 
 int main()
 {
@@ -8,7 +7,5 @@ int main()
     c.set("a", &v1);
     c.set("b", &v2);
     c.set("c", &v3);
-    persistance();
-    persistance();
-    persistance();
+    initialize(&c);
 }
