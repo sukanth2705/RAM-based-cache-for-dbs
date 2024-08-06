@@ -78,7 +78,7 @@ void cleaner(Cache *c)
 {
     while (1)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(FLAGS_cleaner_timeout));
         std::vector<std::string> sample_keys = randomSample(c);
         std::chrono::time_point<std::chrono::system_clock> currenttimestamp = std::chrono::system_clock::now();
         for (int i = 0; i < sample_keys.size(); i++)

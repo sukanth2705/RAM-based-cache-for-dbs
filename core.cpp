@@ -8,7 +8,13 @@
 template <typename T>
 Record<T>::Record(T data) : data(data)
 {
-    ttl = 5;
+    ttl = FLAGS_ttl;
+    timestamp = std::chrono::system_clock::now();
+}
+
+template <typename T>
+Record<T>::Record(T data, int ttl) : data(data), ttl(ttl)
+{
     timestamp = std::chrono::system_clock::now();
 }
 
@@ -28,7 +34,7 @@ std::string Record<T>::getTypeName() const
     return typeName;
 }
 
-Cache::Cache(int num_keys) : num_keys(num_keys) {}
+Cache::Cache() : num_keys(0) {}
 
 BaseRecord *Cache::get(std::string key)
 {
