@@ -57,18 +57,15 @@ bool readFileChecker(std::ifstream &fileObject) //function to check if file obje
 
 void persistance(Cache* c)
 {
-    std::ofstream differentialLog, tableCaptureLog;
-    int type;
-    
-    differentialLog.open(FLAGS_differentiallog_path, std::ios::app);//opening differentiallogs.txt to append command
-    writeFileChecker(differentialLog);
-    differentialLog << opCount << "," << operation << '\n';
+    std::ofstream logPath;
+    logPath.open(FLAGS_log_path, std::ios::app);//opening differentiallogs.txt to append command
+    writeFileChecker(logPath);
+    logPath << opCount << "," << operation << '\n';
     opCount++;
-    differentialLog.close();
+    logPath.close();
+    opCount++;
 }
     
-    
-
 void cleaner(Cache *c)
 {
     while (1)
@@ -91,8 +88,35 @@ void cleaner(Cache *c)
     }
 }
 
-Cache *reconstructor(int &errorcode){
-
+Cache *reconstructor(int &errorcode)
+{
+    Cache *c;
+    std::string line,key = "";
+    std::ifstream logPath;
+    int data,i;
+    bool flag = false;
+    logPath.open(FLAGS_log_path);
+    while(std::getline(logPath,line))
+    {
+        for( i = 0 ; i < line.size() ;i++)
+        {
+            if (line[i]==',') 
+            {
+                flag = true;
+                continue;
+            }
+            if (flag)
+            {
+                data = data*10 + (line[i]-'0');
+            }
+            else
+            {
+                key += line[i];
+            }
+        }
+        Record <int> v1(data);
+        (*c).set(key, &v1);
+    }
 }
 
 void master(Cache *c)
