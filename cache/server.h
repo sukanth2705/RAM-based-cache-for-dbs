@@ -6,7 +6,7 @@
 #include <vector>
 
 void persistance(Cache *);
-void reconstructor(int &errorcode);
+Cache *reconstructor(int &errorcode);
 void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
