@@ -33,7 +33,7 @@ std::vector<std::string> randomSample(Cache *c)
     return sample;
 }
 
-bool fileChecker(std::ofstream &fileObject) //function to check if file object is opened properly
+bool writeFileChecker(std::ofstream &fileObject) //function to check if file object is opened properly
 {
     if (fileObject) return true;
     else
@@ -44,31 +44,27 @@ bool fileChecker(std::ofstream &fileObject) //function to check if file object i
     }
 }
 
+bool readFileChecker(std::ifstream &fileObject) //function to check if file object is opened properly
+{
+    if (fileObject) return true;
+    else
+    {
+        std::cerr <<"Unable to reconstruct Cache as log files are not opening";
+        fileObject.close();
+        return false;
+    }
+}
+
 void persistance(Cache* c)
 {
     std::ofstream differentialLog, tableCaptureLog;
-    if (opCount+1 <= FLAGS_operations_before_tablecapture)
-    {
-        differentialLog.open(FLAGS_differentiallog_path, std::ios::app);//opening differentiallogs.txt to append command
-        fileChecker(differentialLog);
-        differentialLog << opCount << "," << operation << '\n';
-        opCount++;
-        differentialLog.close();
-    }
-    else
-    {
-        differentialLog.open(FLAGS_differentiallog_path); //the following 3 lines clear differential.log by opening in write mode and immediately closing
-        fileChecker(differentialLog);
-        differentialLog.close();
-        tableCaptureLog.open(FLAGS_tablecapturelog_path);//opening tablecapture.log and then copying table
-        fileChecker(tableCaptureLog);
-        for (auto it = (*c).table.begin(); it != (*c).table.end(); it++)
-        {
-            tableCaptureLog << it->first << ' ' << it->second << '\n';
-        }
-        opCount = 0;
-        tableCaptureLog.close();
-    }
+    int type;
+    
+    differentialLog.open(FLAGS_differentiallog_path, std::ios::app);//opening differentiallogs.txt to append command
+    writeFileChecker(differentialLog);
+    differentialLog << opCount << "," << operation << '\n';
+    opCount++;
+    differentialLog.close();
 }
     
     
@@ -91,11 +87,11 @@ void cleaner(Cache *c)
                 c->num_keys--;
                 c->keys.erase(sample_keys[i]);
             }
-        }
+        }       
     }
 }
 
-void reconstructor(int &errorcode){
+Cache *reconstructor(int &errorcode){
 
 }
 
