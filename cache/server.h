@@ -3,6 +3,7 @@
 
 #include "core.h"
 #include "flags.h"
+#include "utils.h"
 
 #include <vector>
 
@@ -10,6 +11,5 @@ void persistance(Cache*);
 void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
-std::vector<std::string> randomSample(Cache* );
 
 #endif

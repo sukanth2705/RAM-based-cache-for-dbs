@@ -13,12 +13,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(SOURCES
     core.cpp
     server.cpp
+    utils.cpp
 )
 
 # Add the header file directory (optional, helps with IDEs)
 set(HEADERS
     cache/core.h
     cache/server.h
+    cache/utils.h
 )
 
 # Create the shared library

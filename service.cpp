@@ -7,5 +7,5 @@ int main()
 {
     Cache db;
     initialize(&db);
-    std::cout<<"Service initialized and started .....\n";
+    std::cout << "Service initialized and started .....\n";
 }
