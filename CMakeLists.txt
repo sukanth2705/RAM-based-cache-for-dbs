@@ -28,7 +28,7 @@ add_library(Mycache SHARED ${SOURCES})
 target_include_directories(Mycache PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 
 # Add the main source file
-add_executable(my_own_redis main.cpp)
+add_executable(my_own_redis service.cpp)
 
 # Specify include directories for the executable
 target_include_directories(my_own_redis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
@@ -69,3 +69,8 @@ install(FILES ${HEADERS} DESTINATION include/cache)
 # Print a message indicating successful configuration
 message(STATUS "Configured Cache library and application")
 
+# Install the executable
+install(TARGETS my_own_redis DESTINATION /usr/local/bin)
+
+# Install systemd service file
+install(FILES my-own-redis.service DESTINATION /etc/systemd/system)

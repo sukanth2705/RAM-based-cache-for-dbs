@@ -1,0 +1,8 @@
+[Unit]
+Description=My Own redis Service
+
+[Service]
+ExecStart=/usr/local/bin/my_own_redis
+Restart=always
+User=nobody
+Group=nogroup
