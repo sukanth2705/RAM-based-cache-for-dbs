@@ -14,7 +14,7 @@ void persistance(Cache *db, std::string operated_key)
     int time_elapsed = get_elapsed_seconds(operated_record);
     if (log && time_elapsed < operated_record->ttl)
     {
-        log << operated_key << " " << operated_record->get() << " " << operated_record->ttl - time_elapsed << std::endl;
+        log << operated_record->type << " " << operated_key << " " << operated_record->get() << " " << operated_record->ttl - time_elapsed << std::endl;
     }
     else
     {
@@ -52,6 +52,7 @@ void master(Cache *db)
     persistance(db, "b");
     db->set("c", &v3);
     persistance(db, "c");
+    Record<float> v5(3.5);
     while (1)
     {
         std::cout << "master:";

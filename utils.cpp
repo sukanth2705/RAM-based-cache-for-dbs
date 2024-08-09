@@ -10,7 +10,7 @@ int get_elapsed_seconds(Record<int> *record)
     return elapsed_seconds.count();
 }
 
-std::vector<std::string> randomSample(Cache *db)
+std::vector<std::string> random_sample(Cache *db)
 {
     std::vector<std::string> sample;
     std::random_device rd;

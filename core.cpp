@@ -12,6 +12,18 @@
 template <typename T>
 Record<T>::Record(T data) : data(data)
 {
+    if constexpr (std::is_same_v<T, int>)
+    {
+        type = INT;
+    }
+    else if constexpr (std::is_same_v<T, std::string>)
+    {
+        type = STRING;
+    }
+    else if constexpr (std::is_same_v<T, float>)
+    {
+        type = FLOAT;
+    }
     ttl = FLAGS_ttl;
     timestamp = std::chrono::system_clock::now();
 }
@@ -19,6 +31,18 @@ Record<T>::Record(T data) : data(data)
 template <typename T>
 Record<T>::Record(T data, int ttl) : data(data), ttl(ttl)
 {
+    if constexpr (std::is_same_v<T, int>)
+    {
+        type = INT;
+    }
+    else if constexpr (std::is_same_v<T, std::string>)
+    {
+        type = STRING;
+    }
+    else if constexpr (std::is_same_v<T, float>)
+    {
+        type = FLOAT;
+    }
     timestamp = std::chrono::system_clock::now();
 }
 
@@ -43,7 +67,7 @@ Cache::Cache() : num_keys(0)
     reconstruct();
 }
 
-BaseRecord *Cache::get(std::string key)
+BaseRecord *Cache::get(std::string key) const
 {
     auto it = table.find(key);
     if (it != table.end())

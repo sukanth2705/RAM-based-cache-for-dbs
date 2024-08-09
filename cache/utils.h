@@ -8,6 +8,6 @@
 #include <vector>
 
 int get_elapsed_seconds(Record<int> *);
-std::vector<std::string> randomSample(Cache *);
+std::vector<std::string> random_sample(Cache *);
 
 #endif

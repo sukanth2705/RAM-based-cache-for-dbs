@@ -9,9 +9,17 @@
 #include <vector>
 #include <set>
 
+enum TYPE
+{
+    INT,
+    FLOAT,
+    STRING,
+};
+
 class BaseRecord
 {
 public:
+    TYPE type;
     virtual ~BaseRecord() = default;
     virtual std::string getTypeName() const = 0;
 };
@@ -33,13 +41,14 @@ public:
 
 class Cache
 {
+    void reconstruct();
+
 public:
     std::map<std::string, BaseRecord *> table;
     std::set<std::string> keys;
     int num_keys;
-    BaseRecord *get(std::string);
+    BaseRecord *get(std::string) const;
     void set(std::string, BaseRecord *);
-    void reconstruct();
     Cache();
 };
 
