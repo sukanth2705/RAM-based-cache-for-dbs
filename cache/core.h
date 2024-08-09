@@ -2,6 +2,7 @@
 #define CORE_H
 
 #include "flags.h"
+
 #include <chrono>
 #include <string>
 #include <map>

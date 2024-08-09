@@ -8,6 +8,13 @@
 #include <string>
 #include <thread>
 
+int get_elapsed_seconds(Record<int> *record)
+{
+    std::chrono::time_point<std::chrono::system_clock> currenttimestamp = std::chrono::system_clock::now();
+    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(currenttimestamp - record->timestamp);
+    return elapsed_seconds.count();
+}
+
 std::vector<std::string> randomSample(Cache *c)
 {
     std::vector<std::string> sample;
@@ -40,13 +47,13 @@ bool readFileChecker(std::ifstream &fileObject) // function to check if file obj
 void persistance(Cache *c, std::string operated_key)
 {
     std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);
-    std::cout << absolute_log_file_path << std::endl;
     std::ofstream log;
     log.open(absolute_log_file_path, std::ios::app); // opening log file to append command
     Record<int> *operated_record = dynamic_cast<Record<int> *>(c->get(operated_key));
-    if (log)
+    int time_elapsed = get_elapsed_seconds(operated_record);
+    if (log && time_elapsed < operated_record->ttl)
     {
-        log << operated_key << " " << operated_record->get() << std::endl;
+        log << operated_key << " " << operated_record->get() << " " << operated_record->ttl - time_elapsed << std::endl;
     }
     else
     {
@@ -65,9 +72,7 @@ void cleaner(Cache *c)
         for (int i = 0; i < sample_keys.size(); i++)
         {
             const auto record = dynamic_cast<Record<int> *>(c->table[sample_keys[i]]);
-            auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(currenttimestamp - record->timestamp);
-            std::cout << elapsed_seconds.count() << std::endl;
-            if (elapsed_seconds.count() > record->ttl)
+            if (get_elapsed_seconds(record) >= record->ttl)
             {
                 c->table.erase(sample_keys[i]);
                 c->num_keys--;

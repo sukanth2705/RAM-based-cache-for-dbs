@@ -1,4 +1,5 @@
 #include "cache/core.h"
+
 #include <chrono>
 #include <cxxabi.h>
 #include <filesystem>
@@ -66,7 +67,6 @@ void Cache::reconstruct()
     {
         for (const auto &entry : std::filesystem::directory_iterator(log_directory))
         {
-            std::cout << entry.path() << " " << entry.path().filename() << std::endl;
             if (std::filesystem::is_regular_file(entry.path()) && (entry.path().filename() == FLAGS_log_file))
             {
                 std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);

@@ -3,6 +3,7 @@
 
 #include "core.h"
 #include "flags.h"
+
 #include <vector>
 
 void persistance(Cache*);
