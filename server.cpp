@@ -1,6 +1,5 @@
 #include "cache/server.h"
-#include "cache/flags.h"
-#include "cache/core.h"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -9,16 +8,9 @@
 #include <string>
 #include <thread>
 
-int opCount = 0;
-std::string operation;
-
 std::vector<std::string> randomSample(Cache *c)
 {
     std::vector<std::string> sample;
-    if (c->num_keys <= 0)
-    {
-        throw std::invalid_argument("Sample size cannot be larger than population size");
-    }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, c->num_keys - 1);
@@ -33,39 +25,36 @@ std::vector<std::string> randomSample(Cache *c)
     return sample;
 }
 
-bool writeFileChecker(std::ofstream &fileObject) //function to check if file object is opened properly
+bool readFileChecker(std::ifstream &fileObject) // function to check if file object is opened properly
 {
-    if (fileObject) return true;
+    if (fileObject)
+        return true;
     else
     {
-        std::cerr <<"Unable to open log file";
+        std::cerr << "Unable to reconstruct Cache as log files are not opening";
         fileObject.close();
         return false;
     }
 }
 
-bool readFileChecker(std::ifstream &fileObject) //function to check if file object is opened properly
+void persistance(Cache *c, std::string operated_key)
 {
-    if (fileObject) return true;
+    std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);
+    std::cout << absolute_log_file_path << std::endl;
+    std::ofstream log;
+    log.open(absolute_log_file_path, std::ios::app); // opening log file to append command
+    Record<int> *operated_record = dynamic_cast<Record<int> *>(c->get(operated_key));
+    if (log)
+    {
+        log << operated_key << " " << operated_record->get() << std::endl;
+    }
     else
     {
-        std::cerr <<"Unable to reconstruct Cache as log files are not opening";
-        fileObject.close();
-        return false;
+        std::cout << "Unable to record this operation in log file.\n";
     }
+    log.close();
 }
 
-void persistance(Cache* c)
-{
-    std::ofstream logPath;
-    logPath.open(FLAGS_log_path, std::ios::app);//opening differentiallogs.txt to append command
-    writeFileChecker(logPath);
-    logPath << opCount << "," << operation << '\n';
-    opCount++;
-    logPath.close();
-    opCount++;
-}
-    
 void cleaner(Cache *c)
 {
     while (1)
@@ -84,43 +73,19 @@ void cleaner(Cache *c)
                 c->num_keys--;
                 c->keys.erase(sample_keys[i]);
             }
-        }       
-    }
-}
-
-Cache *reconstructor(int &errorcode)
-{
-    Cache *c;
-    std::string line,key = "";
-    std::ifstream logPath;
-    int data,i;
-    bool flag = false;
-    logPath.open(FLAGS_log_path);
-    while(std::getline(logPath,line))
-    {
-        for( i = 0 ; i < line.size() ;i++)
-        {
-            if (line[i]==',') 
-            {
-                flag = true;
-                continue;
-            }
-            if (flag)
-            {
-                data = data*10 + (line[i]-'0');
-            }
-            else
-            {
-                key += line[i];
-            }
         }
-        Record <int> v1(data);
-        (*c).set(key, &v1);
     }
 }
 
 void master(Cache *c)
 {
+    Record<int> v1(3, 10), v2(4), v3(5);
+    c->set("a", &v1);
+    persistance(c, "a");
+    c->set("b", &v2);
+    persistance(c, "b");
+    c->set("c", &v3);
+    persistance(c, "c");
     while (1)
     {
         std::cout << "master:";
@@ -132,9 +97,7 @@ void master(Cache *c)
 void initialize(Cache *c)
 {
     std::thread master_th(master, c);
-    std::thread persistance_th(persistance, c);
     std::thread cleaner_th(cleaner, c);
     master_th.join();
-    persistance_th.join();
     cleaner_th.join();
 }

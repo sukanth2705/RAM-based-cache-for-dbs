@@ -3,7 +3,10 @@
 
 #define FLAGS_ttl 5
 #define FLAGS_cleaner_timeout 2
+#define FLAGS_log_file "capturelogs.txt"
 
-#define FLAGS_log_path "../../logs/operationlogs.log"
+#ifdef __linux__
+    #define FLAGS_log_path "/tmp"
+#endif
 
 #endif

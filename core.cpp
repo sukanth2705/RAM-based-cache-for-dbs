@@ -1,7 +1,10 @@
 #include "cache/core.h"
 #include <chrono>
 #include <cxxabi.h>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <typeinfo>
 
@@ -34,7 +37,10 @@ std::string Record<T>::getTypeName() const
     return typeName;
 }
 
-Cache::Cache() : num_keys(0) {}
+Cache::Cache() : num_keys(0)
+{
+    reconstruct();
+}
 
 BaseRecord *Cache::get(std::string key)
 {
@@ -51,6 +57,43 @@ void Cache::set(std::string key, BaseRecord *record)
     table[key] = record;
     keys.insert(key);
     num_keys++;
+}
+
+void Cache::reconstruct()
+{
+    std::filesystem::path log_directory = FLAGS_log_path;
+    if (std::filesystem::exists(log_directory) && std::filesystem::is_directory(log_directory))
+    {
+        for (const auto &entry : std::filesystem::directory_iterator(log_directory))
+        {
+            std::cout << entry.path() << " " << entry.path().filename() << std::endl;
+            if (std::filesystem::is_regular_file(entry.path()) && (entry.path().filename() == FLAGS_log_file))
+            {
+                std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);
+                std::ifstream file(absolute_log_file_path);
+                if (file)
+                {
+                    std::string line;
+                    while (std::getline(file, line))
+                    {
+                        std::cout << line << std::endl;
+                    }
+                    std::cout << "Cache reconstructed from the log file.\n";
+                    file.close();
+                }
+                else
+                {
+                    std::cout << "Unable to open the log file.\n";
+                }
+                return;
+            }
+        }
+    }
+    else
+    {
+        std::cout << "Unable to use the specified log directory path.\n";
+        return;
+    }
 }
 
 template class Record<int>;

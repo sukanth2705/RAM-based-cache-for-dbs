@@ -38,6 +38,7 @@ public:
     int num_keys;
     BaseRecord *get(std::string);
     void set(std::string, BaseRecord *);
+    void reconstruct();
     Cache();
 };
 

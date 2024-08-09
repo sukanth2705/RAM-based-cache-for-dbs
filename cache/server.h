@@ -5,8 +5,7 @@
 #include "flags.h"
 #include <vector>
 
-void persistance(Cache *);
-Cache *reconstructor(int &errorcode);
+void persistance(Cache*);
 void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
