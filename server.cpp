@@ -2,8 +2,11 @@
 
 #include <fstream>
 #include <iostream>
+#include <netinet/in.h>
 #include <string>
+#include <sys/socket.h>
 #include <thread>
+#include <unistd.h>
 
 void persistance(Cache *db, std::string operated_key)
 {
@@ -45,14 +48,27 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
-    Record<int> v1(3, 10), v2(4), v3(5);
-    db->set("a", &v1);
-    persistance(db, "a");
-    db->set("b", &v2);
-    persistance(db, "b");
-    db->set("c", &v3);
-    persistance(db, "c");
-    Record<float> v5(3.5);
+    int server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock < 0)
+    {
+        std::cout << "Socket creation failed" << std::endl;
+        return;
+    }
+
+    sockaddr_in serv_addr;
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(8080);
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(server_sock, (const struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        std::cout << "Unable to bind socket" << std::endl;
+        return;
+    }
+    if (listen(server_sock, 5))
+    {
+        std::cout << "Unable to listen for connections" << std::endl;
+    }
     while (1)
     {
         std::cout << "master:";
