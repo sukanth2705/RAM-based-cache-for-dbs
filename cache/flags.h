@@ -9,7 +9,7 @@
     #define FLAGS_log_path "/tmp"
 #endif
 
-#ifndef __linux__
+#ifdef _WIN64
     #define FLAGS_log_path "logs_windows"
 #endif
 

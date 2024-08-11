@@ -1,6 +1,6 @@
 #include "cache/core.h"
 
-
+#include <algorithm>
 #include <chrono>
 #include <cxxabi.h>
 #include <filesystem>
@@ -80,9 +80,12 @@ BaseRecord *Cache::get(std::string key) const
 
 void Cache::set(std::string key, BaseRecord *record)
 {
+    if (table.find(key) == table.end())
+    {
+        num_keys++;
+    }
     table[key] = record;
     keys.insert(key);
-    num_keys++;
 }
 
 void Cache::reconstruct()
@@ -101,61 +104,41 @@ void Cache::reconstruct()
                     std::string line;
                     while (std::getline(file, line))
                     {
-                        std::string type,key,data,ttl;
-                        int i=0;
-                        while( line[i] != ' ')
-                        {
-                            type += line[i];
-                            i++;
-                        }
-                        i++;
-                        while ( line[i] != ' ')
-                        {
-                            key += line[i];
-                            i++;
-                        }
-                        i++;
-                        while( line[i] != ' ')
-                        {
-                            data += line[i];
-                            i++;
-                        }
-                        i++;
-                        while( line[i] != ' ')
-                        {
-                            ttl += line[i];
-                            i++;
-                        }
+                        line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+                        std::istringstream iss(line);
+                        std::string type, key, data, ttl;
+                        iss >> type;
+                        iss >> key;
+                        iss >> data;
+                        iss >> ttl;
+                        TYPE t = static_cast<TYPE>(stoi(type));
                         int timeToLive = std::stoi(ttl);
-                        if ( timeToLive < 0)
-                        {
-                            continue;
-                        }
-                        if (type == "INT" )
+                        if (t == INT)
                         {
                             int insertValue = std::stoi(data);
                             Record<int> val(insertValue);
-                            Cache::set(key, &val);                           
+                            Cache::set(key, &val);
                         }
-                        if (type == "FLOAT")
+                        else if (t == FLOAT)
                         {
                             float insertValue = std::stof(data);
                             Record<float> val(insertValue);
                             Cache::set(key, &val);
                         }
-                        if (type == "STRING"){
+                        else if (t == STRING)
+                        {
                             std::string insertValue = data;
                             Record<std::string> val(insertValue);
                             Cache::set(key, &val);
                         }
                     }
-                    std::cout << "Cache reconstructed from the log file.\n";
+                    std::cout << "Cache reconstructed from the log file\n";
                     file.close();
                     return;
                 }
                 else
                 {
-                    std::cout << "Unable to open the log file.\n";
+                    std::cout << "Unable to open the log file\n";
                 }
                 return;
             }
@@ -163,7 +146,7 @@ void Cache::reconstruct()
     }
     else
     {
-        std::cout << "Unable to use the specified log directory path.\n";
+        std::cout << "Unable to use the specified log directory path\n";
         return;
     }
 }

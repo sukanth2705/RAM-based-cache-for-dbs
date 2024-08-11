@@ -5,9 +5,10 @@
 #include "flags.h"
 #include "utils.h"
 
+#include <string>
 #include <vector>
 
-void persistance(Cache*);
+void persistance(Cache *, std::string);
 void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
