@@ -2,6 +2,7 @@
 #include "cache/client.h"
 
 #include <algorithm>
+#include <fcntl.h>
 #include <random>
 
 int get_elapsed_seconds(Record<int> *record)
@@ -28,6 +29,9 @@ std::vector<std::string> random_sample(Cache *db)
     return sample;
 }
 
-
-
+int set_non_blocking(int fd)
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+    return fcntl(fd, F_SETFL, O_NONBLOCK | flags);
+}
 

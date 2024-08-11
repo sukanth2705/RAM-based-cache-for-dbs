@@ -2,8 +2,11 @@
 
 #include <fstream>
 #include <iostream>
+#include <netinet/in.h>
 #include <string>
+#include <sys/socket.h>
 #include <thread>
+#include <unistd.h>
 
 void persistance(Cache *db, std::string operated_key)
 {
@@ -45,19 +48,75 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
-    Record<int> v1(3, 10), v2(4), v3(5);
-    db->set("a", &v1);
-    persistance(db, "a");
-    db->set("b", &v2);
-    persistance(db, "b");
-    db->set("c", &v3);
-    persistance(db, "c");
-    Record<float> v5(3.5);
+    int server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock < 0)
+    {
+        std::cout << "Socket creation failed" << std::endl;
+        return;
+    }
+
+    if (set_non_blocking(server_sock) < 0)
+    {
+        std::cout << "Error in setting socket to non blocking mode" << std::endl;
+        return;
+    }
+
+    sockaddr_in serv_addr;
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(8080);
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(server_sock, (const struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        std::cout << "Unable to bind socket" << std::endl;
+        return;
+    }
+    if (listen(server_sock, 5))
+    {
+        std::cout << "Unable to listen for connections" << std::endl;
+    }
+
+    fd_set readfds;
+    int max_fd = server_sock;
+    std::vector<int> client_sock;
     while (1)
     {
-        std::cout << "master:";
-        std::cout << db->num_keys << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        FD_ZERO(&readfds);
+        FD_SET(server_sock, &readfds);
+        for (int i = 0; i < client_sock.size(); i++)
+        {
+            FD_SET(client_sock[i], &readfds);
+            max_fd = std::max(max_fd, client_sock[i]);
+        }
+        int activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        if (activity < 0)
+        {
+            std::cout << "Error in select call" << std::endl;
+            return;
+        }
+        socklen_t len = sizeof(serv_addr);
+        if (FD_ISSET(server_sock, &readfds))
+        {
+            int sock = accept(server_sock, (sockaddr *)&serv_addr, &len);
+            if (sock < 0)
+            {
+                std::cout << "Error accepting connection" << std::endl;
+            }
+            else if (set_non_blocking(sock) < 0)
+            {
+                std::cout << "Error in setting socket to non blocking mode" << std::endl;
+            }
+            else
+            {
+                client_sock.push_back(sock);
+            }
+        }
+        for (int i = 0; i < client_sock.size(); i++)
+        {
+            if (FD_ISSET(client_sock[i], &readfds))
+            {
+            }
+        }
     }
 }
 
