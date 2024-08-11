@@ -1,5 +1,6 @@
 #include "cache/core.h"
 
+
 #include <chrono>
 #include <cxxabi.h>
 #include <filesystem>
@@ -100,7 +101,53 @@ void Cache::reconstruct()
                     std::string line;
                     while (std::getline(file, line))
                     {
-                        std::cout << line << std::endl;
+                        std::string type,key,data,ttl;
+                        int i=0;
+                        while( line[i] != ' ')
+                        {
+                            type += line[i];
+                            i++;
+                        }
+                        i++;
+                        while ( line[i] != ' ')
+                        {
+                            key += line[i];
+                            i++;
+                        }
+                        i++;
+                        while( line[i] != ' ')
+                        {
+                            data += line[i];
+                            i++;
+                        }
+                        i++;
+                        while( line[i] != ' ')
+                        {
+                            ttl += line[i];
+                            i++;
+                        }
+                        int timeToLive = std::stoi(ttl);
+                        if ( timeToLive < 0)
+                        {
+                            continue;
+                        }
+                        if (type == "INT" )
+                        {
+                            int insertValue = std::stoi(data);
+                            Record<int> val(insertValue);
+                            Cache::set(key, &val);                           
+                        }
+                        if (type == "FLOAT")
+                        {
+                            float insertValue = std::stof(data);
+                            Record<float> val(insertValue);
+                            Cache::set(key, &val);
+                        }
+                        if (type == "STRING"){
+                            std::string insertValue = data;
+                            Record<std::string> val(insertValue);
+                            Cache::set(key, &val);
+                        }
                     }
                     std::cout << "Cache reconstructed from the log file.\n";
                     file.close();
