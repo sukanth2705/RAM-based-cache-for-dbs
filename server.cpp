@@ -28,7 +28,7 @@ void persistance(Cache *db, std::string operated_key)
 
 void cleaner(Cache *db)
 {
-    while (1)
+    while (!is_carshed)
     {
         std::this_thread::sleep_for(std::chrono::seconds(FLAGS_cleaner_timeout));
         std::vector<std::string> sample_keys = random_sample(db);
@@ -48,16 +48,20 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
+    char buff[1024] = "-OK\r\n";
+    decode(buff);
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0)
     {
         std::cout << "Socket creation failed" << std::endl;
+        is_carshed = true;
         return;
     }
 
     if (set_non_blocking(server_sock) < 0)
     {
         std::cout << "Error in setting socket to non blocking mode" << std::endl;
+        is_carshed = true;
         return;
     }
 
@@ -69,11 +73,14 @@ void master(Cache *db)
     if (bind(server_sock, (const struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
         std::cout << "Unable to bind socket" << std::endl;
+        is_carshed = true;
         return;
     }
-    if (listen(server_sock, 5))
+    if (listen(server_sock, 5) < 0)
     {
         std::cout << "Unable to listen for connections" << std::endl;
+        is_carshed = true;
+        return;
     }
 
     fd_set readfds;
@@ -89,9 +96,11 @@ void master(Cache *db)
             max_fd = std::max(max_fd, client_sock[i]);
         }
         int activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        std::cout<<"hello"<<std::endl;
         if (activity < 0)
         {
             std::cout << "Error in select call" << std::endl;
+            is_carshed = true;
             return;
         }
         socklen_t len = sizeof(serv_addr);

@@ -3,7 +3,9 @@
 
 #include <algorithm>
 #include <fcntl.h>
+#include <iostream>
 #include <random>
+#include <string.h>
 
 int get_elapsed_seconds(Record<int> *record)
 {
@@ -35,3 +37,33 @@ int set_non_blocking(int fd)
     return fcntl(fd, F_SETFL, O_NONBLOCK | flags);
 }
 
+void handle_commands(int command, char *token)
+{
+    COMMANDS cmd = static_cast<COMMANDS>(command);
+    if (cmd == SET)
+    {
+        std::cout << "set" << std::endl;
+    }
+    else if (cmd == GET)
+    {
+        std::cout << "get" << std::endl;
+    }
+    else if (cmd == PING)
+    {
+        std::cout << "ping" << std::endl;
+    }
+}
+
+void decode(const char *msg)
+{
+    char buff[1024];
+    memset(buff, '\0', sizeof(buff));
+    strcpy(buff, msg);
+    char *token = strtok(buff, "\r\n");
+    if (buff[0] == '+' || buff[0] == '-')
+    {
+        std::cout << token + 1 << std::endl;
+        return ;
+    }
+    handle_commands(atoi(token), token);
+}

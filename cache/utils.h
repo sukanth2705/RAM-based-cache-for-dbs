@@ -10,5 +10,5 @@
 int get_elapsed_seconds(Record<int> *);
 std::vector<std::string> random_sample(Cache *);
 int set_non_blocking(int);
-
+void decode(const char *);
 #endif
