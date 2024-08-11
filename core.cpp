@@ -151,6 +151,7 @@ void Cache::reconstruct()
                     }
                     std::cout << "Cache reconstructed from the log file.\n";
                     file.close();
+                    return;
                 }
                 else
                 {
