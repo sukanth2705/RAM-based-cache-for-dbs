@@ -16,6 +16,12 @@ enum TYPE
     STRING,
 };
 
+enum COMMANDS{
+    SET,
+    GET,
+    PING,
+};
+
 class BaseRecord
 {
 public:

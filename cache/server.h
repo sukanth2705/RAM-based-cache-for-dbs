@@ -13,4 +13,6 @@ void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
 
+bool is_carshed = false;
+
 #endif
