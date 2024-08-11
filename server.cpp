@@ -55,6 +55,12 @@ void master(Cache *db)
         return;
     }
 
+    if (set_non_blocking(server_sock) < 0)
+    {
+        std::cout << "Error in setting socket to non blocking mode" << std::endl;
+        return;
+    }
+
     sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(8080);
@@ -69,11 +75,48 @@ void master(Cache *db)
     {
         std::cout << "Unable to listen for connections" << std::endl;
     }
+
+    fd_set readfds;
+    int max_fd = server_sock;
+    std::vector<int> client_sock;
     while (1)
     {
-        std::cout << "master:";
-        std::cout << db->num_keys << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        FD_ZERO(&readfds);
+        FD_SET(server_sock, &readfds);
+        for (int i = 0; i < client_sock.size(); i++)
+        {
+            FD_SET(client_sock[i], &readfds);
+            max_fd = std::max(max_fd, client_sock[i]);
+        }
+        int activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        if (activity < 0)
+        {
+            std::cout << "Error in select call" << std::endl;
+            return;
+        }
+        socklen_t len = sizeof(serv_addr);
+        if (FD_ISSET(server_sock, &readfds))
+        {
+            int sock = accept(server_sock, (sockaddr *)&serv_addr, &len);
+            if (sock < 0)
+            {
+                std::cout << "Error accepting connection" << std::endl;
+            }
+            else if (set_non_blocking(sock) < 0)
+            {
+                std::cout << "Error in setting socket to non blocking mode" << std::endl;
+            }
+            else
+            {
+                client_sock.push_back(sock);
+            }
+        }
+        for (int i = 0; i < client_sock.size(); i++)
+        {
+            if (FD_ISSET(client_sock[i], &readfds))
+            {
+            }
+        }
     }
 }
 
