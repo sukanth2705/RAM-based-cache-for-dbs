@@ -6,6 +6,8 @@
 #include <iostream>
 #include <random>
 #include <string.h>
+#include <sstream>
+#include <vector>
 
 int get_elapsed_seconds(Record<int> *record)
 {
@@ -29,6 +31,43 @@ std::vector<std::string> random_sample(Cache *db)
         sample.push_back(*it);
     }
     return sample;
+}
+
+
+char *seperator(char *encodedValue,int index)
+{
+    encodedValue[index++] = '\\';
+    encodedValue[index++] = 'r';
+    encodedValue[index++] = '\\';
+    encodedValue[index++] = 'n';
+    return encodedValue;
+}
+
+char *copier(char *encodedValue,std::string input,int valIndex){
+    for(int i = 0; i < input.size(); i++){
+        encodedValue[valIndex++]=input[i];
+    }
+    
+    encodedValue = seperator(encodedValue,valIndex);
+    valIndex += 4;
+    return encodedValue;
+}
+
+char *encode(char *encodedValue, std::vector<std::string> input)
+{
+    encodedValue[0] = '+';
+    int valIndex = 1;
+    for(int i = 0; i++; i<4)
+    {
+        encodedValue = copier(encodedValue,input[i],valIndex);
+        valIndex = input[i].size()+4;
+    }
+    if (input.size() == 5) 
+    {
+        encodedValue = copier(encodedValue,input[4],valIndex);
+        valIndex = input[4].size()+4;
+    }
+    return encodedValue;
 }
 
 int set_non_blocking(int fd)
