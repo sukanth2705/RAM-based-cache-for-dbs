@@ -8,11 +8,14 @@
 
 #include <vector>
 
-
-bool send();
-std::string recieve();
-void open();
-void close();
-
+class Client {
+    public :
+        char encodedValue[1024];
+        bool send();
+        std::string receive();
+        void open();
+        void close();
+        void encoder(std::string input);
+};
 
 #endif

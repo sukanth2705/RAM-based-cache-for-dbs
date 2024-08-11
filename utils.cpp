@@ -1,4 +1,5 @@
-# include "cache/utils.h"
+#include "cache/utils.h"
+#include "cache/client.h"
 
 #include <algorithm>
 #include <random>
@@ -9,6 +10,7 @@ int get_elapsed_seconds(Record<int> *record)
     auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(currenttimestamp - record->timestamp);
     return elapsed_seconds.count();
 }
+
 
 std::vector<std::string> random_sample(Cache *db)
 {
@@ -23,6 +25,9 @@ std::vector<std::string> random_sample(Cache *db)
     {
         sample.push_back(*it);
     }
-
     return sample;
 }
+
+
+
+
