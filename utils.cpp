@@ -28,6 +28,43 @@ std::vector<std::string> random_sample(Cache *db)
     return sample;
 }
 
+char *seperator(char *encodedValue,int index)
+{
+    encodedValue[index++] = '\\';
+    encodedValue[index++] = 'r';
+    encodedValue[index++] = '\\';
+    encodedValue[index++] = 'n';
+    return encodedValue;
+}
 
+char *encode(char *encodedValue, std::string input)
+{
+    encodedValue[0] = '+';
+    std::string command;
+    int i=0;
+
+    for(i = 0; i < 3; i++)
+    {
+        command += input[i]; 
+    }
+    if (command == "SET")
+    {
+        encodedValue[1] = '1';
+    }
+    else if (command == "GET")
+    {
+        encodedValue[1] = '0';
+    }
+    else if (command == "PIN")
+    {
+        encodedValue[1] = '2';    
+    }
+    
+    encodedValue = seperator(encodedValue,2);
+
+    
+
+    return encodedValue;
+}
 
 

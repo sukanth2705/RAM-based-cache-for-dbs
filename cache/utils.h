@@ -10,4 +10,7 @@
 int get_elapsed_seconds(Record<int> *);
 std::vector<std::string> random_sample(Cache *);
 
+char *encode(char *encodedValue,std::string input);
+
 #endif
+
