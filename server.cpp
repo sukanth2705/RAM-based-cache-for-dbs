@@ -101,8 +101,10 @@ void master(Cache *db)
             else
             {
                 client_sock.push_back(sock);
+                max_fd = std::max(max_fd, sock);
             }
         }
+        bool sw = true;
         for (int i = 0; i < client_sock.size(); i++)
         {
             if (FD_ISSET(client_sock[i], &readfds))
@@ -110,7 +112,13 @@ void master(Cache *db)
                 recv(client_sock[i], buff, sizeof(buff), 0);
                 decode(buff, db);
                 send(client_sock[i], buff, sizeof(buff), 0);
+                shutdown(client_sock[i], SHUT_RDWR);
+                sw = false;
             }
+        }
+        if (!sw)
+        {
+            client_sock.clear();
         }
     }
 }

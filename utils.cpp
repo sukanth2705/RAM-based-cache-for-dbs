@@ -83,8 +83,8 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
         std::string key, type_str, value, ttl;
         key = strtok(NULL, "\r\n");
         type_str = strtok(NULL, "\r\n");
-        value = strtok(NULL, "\r\n");
         ttl = strtok(NULL, "\r\n");
+        value = strtok(NULL, "\r\n");
         int TTL = std::stoi(ttl);
         int t = std::stoi(type_str);
         TYPE type = static_cast<TYPE>(t);

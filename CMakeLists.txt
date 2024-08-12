@@ -34,14 +34,17 @@ target_include_directories(Mycache PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 # Add the main source file
 add_executable(my_own_redis service.cpp)
 add_executable(test test.cpp)
+add_executable(redis-cli cli.cpp)
 
 # Specify include directories for the executable
 target_include_directories(my_own_redis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 target_include_directories(test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
+target_include_directories(redis-cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 
 # Link the executable with the Mycache library
 target_link_libraries(my_own_redis PRIVATE Mycache)
 target_link_libraries(test PRIVATE Mycache)
+target_link_libraries(redis-cli PRIVATE Mycache)
 
 # Platform-specific settings
 if(WIN32)
@@ -78,6 +81,7 @@ message(STATUS "Configured Cache library and application")
 
 # Install the executable
 install(TARGETS my_own_redis DESTINATION /usr/local/bin)
+install(TARGETS redis-cli DESTINATION /usr/local/bin)
 
 # Install systemd service file
 install(FILES my-own-redis.service DESTINATION /etc/systemd/system)

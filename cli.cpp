@@ -1,32 +1,27 @@
-
-#include "cache/core.h"
-#include "cache/server.h"
-#include "cache/utils.h"
-#include "cache/flags.h"
-#include <string.h>
-#include <iostream>
 #include "cache/client.h"
 
-int main(int argc,char * argv[])
+#include <iostream>
+#include <string.h>
+
+int main(int argc, char *argv[])
 {
-    Client client = Client::Client("127.0.01",8050);
+    Client client("127.0.0.1", 8080);
     std::string command;
-    command = argv[0];
-    int returnval;
+    command = argv[1];
     if (command == "SET")
     {
         int cmd = static_cast<int>(SET);
         command = std::to_string(cmd);
         TYPE typ;
-        std::string key,type,value,ttl;
-        key = argv[1];
-        type = argv[2];
-        value = argv[3];
-        if (argc == 5)
+        std::string key, type, value, ttl;
+        key = argv[2];
+        type = argv[3];
+        value = argv[4];
+        if (argc == 6)
         {
-            ttl = argv[4];
+            ttl = argv[5];
         }
-        else 
+        else
         {
             ttl = FLAGS_ttl;
         }
@@ -44,27 +39,26 @@ int main(int argc,char * argv[])
         }
         else
         {
-            std::cout<<"Invalid data type"<<std::endl;
-            returnval = -2;
+            std::cout << "Invalid data type\n";
+            exit(EXIT_FAILURE);
         }
-        client.set(key,typ,ttl);
+        client.set(key, typ, ttl);
     }
     else if (command == "GET")
     {
-        std::string key = argv[1];
+        std::string key = argv[2];
         client.get(key);
-        returnval = 0;
     }
     else if (command == "PING")
     {
         client.ping();
     }
-    else 
+    else
     {
-        std::cout<<"Invalid command";
-        returnval = -1;
+        std::cout << "Invalid command\n";
+        exit(EXIT_FAILURE);
     }
+    std::cout << client.encoded_value << std::endl;
     client.close_connection();
-    return  returnval;
-
+    exit(EXIT_SUCCESS);
 }
