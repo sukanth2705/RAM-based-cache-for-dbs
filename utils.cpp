@@ -1,8 +1,8 @@
 #include "cache/utils.h"
-#include "cache/client.h"
 
 #include <algorithm>
 #include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <string.h>
@@ -42,6 +42,24 @@ int set_non_blocking(int fd)
     return fcntl(fd, F_SETFL, O_NONBLOCK | flags);
 }
 
+void persistance(Cache *db, std::string operated_key)
+{
+    std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);
+    std::ofstream log;
+    log.open(absolute_log_file_path, std::ios::app);
+    Record<int> *operated_record = dynamic_cast<Record<int> *>(db->get(operated_key));
+    int time_elapsed = get_elapsed_seconds(operated_record);
+    if (log && time_elapsed < operated_record->ttl)
+    {
+        log << operated_record->type << " " << operated_key << " " << operated_record->get() << " " << operated_record->ttl - time_elapsed << std::endl;
+    }
+    else
+    {
+        std::cout << "Unable to record this operation in log file.\n";
+    }
+    log.close();
+}
+
 void encode(char *encoded_value, std::vector<std::string> input)
 {
     memset(encoded_value, '\0', sizeof(encoded_value));
@@ -62,95 +80,85 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
     COMMANDS cmd = static_cast<COMMANDS>(command);
     if (cmd == SET)
     {
-        std::cout << "set" << std::endl;
         std::string key, type_str, value, ttl;
-        key = strtok(NULL,"\r\n");
-        type_str = strtok(NULL,"\r\n");
+        key = strtok(NULL, "\r\n");
+        type_str = strtok(NULL, "\r\n");
         value = strtok(NULL, "\r\n");
-        ttl = strtok(NULL,"\r\n");
+        ttl = strtok(NULL, "\r\n");
         int TTL = std::stoi(ttl);
         int t = std::stoi(type_str);
         TYPE type = static_cast<TYPE>(t);
         if (type == STRING)
         {
             std::string val = value;
-            Record<std::string> data(val,TTL);
-            db->set(key,&data);
-            return;
+            Record<std::string> *data = new Record<std::string>(val, TTL);
+            db->set(key, data);
         }
         else if (type == FLOAT)
         {
             float val = std::stof(value);
-            Record<float> data(val,TTL);
-            db->set(key, &data);
-            return;
-
+            Record<float> *data = new Record<float>(val, TTL);
+            db->set(key, data);
         }
         else if (type == INT)
         {
             int val = std::stoi(value);
-            Record<int> data(val,TTL);
-            db->set(key,&data);
-            return;
+            Record<int> *data = new Record<int>(val, TTL);
+            db->set(key, data);
         }
+        persistance(db, key);
+        encode(msg, {"+OK"});
     }
     else if (cmd == GET)
     {
         std::cout << "get" << std::endl;
-        token = strtok(NULL,"\r\n");
+        token = strtok(NULL, "\r\n");
         BaseRecord *answer;
         answer = db->get(token);
         TYPE anstyp = answer->type;
         if (anstyp == STRING)
         {
             Record<std::string> *data;
-            data =dynamic_cast<Record<std::string> *>(answer);
-            if(data == nullptr)
+            data = dynamic_cast<Record<std::string> *>(answer);
+            if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 std::string val = data->get();
                 std::string message = "+" + val;
-                encode(msg,{message});
-                return;
+                encode(msg, {message});
             }
-
         }
         else if (anstyp == FLOAT)
         {
             Record<float> *data;
             data = dynamic_cast<Record<float> *>(answer);
-            if(data == nullptr)
+            if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 float val = data->get();
                 std::string message = "+" + std::to_string(val);
-                encode(msg,{message});
-                return;
+                encode(msg, {message});
             }
         }
         else if (anstyp == INT)
         {
             Record<int> *data;
             data = dynamic_cast<Record<int> *>(answer);
-            if(data == nullptr)
+            if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 int val = data->get();
                 std::string message = "+" + std::to_string(val);
-                encode(msg,{message});
-                return;
+                encode(msg, {message});
             }
         }
     }
@@ -160,16 +168,22 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
     }
 }
 
-void decode(char *msg, Cache *db)
+bool decode(char *msg, Cache *db)
 {
     char buff[1024];
     memset(buff, '\0', sizeof(buff));
     strcpy(buff, msg);
     char *token = strtok(buff, "\r\n");
-    if (buff[0] == '+' || buff[0] == '-')
+    if (buff[0] == '+')
     {
         std::cout << token + 1 << std::endl;
-        return;
+        return true;
+    }
+    else if (buff[0] == '-')
+    {
+        std::cout << token + 1 << std::endl;
+        return false;
     }
     handle_commands(atoi(token), token, msg, db);
+    return true;
 }

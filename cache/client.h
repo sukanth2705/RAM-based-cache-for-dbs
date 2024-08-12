@@ -11,16 +11,16 @@
 
 class Client
 {
-    char encoded_value[1024];
     int client_sock;
     sockaddr_in serv_addr;
 
 public:
+    char encoded_value[1024];
     Client(std::string, int);
-    void ping();
-    void get(std::string);
-    void set(std::string, TYPE, std::string);
-    void set(std::string, TYPE, std::string, int);
+    bool ping();
+    bool get(std::string);
+    bool set(std::string, TYPE, std::string);
+    bool set(std::string, TYPE, std::string, int);
     void close_connection();
 };
 

@@ -1,6 +1,5 @@
 #include "cache/server.h"
 
-#include <fstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <string>
@@ -8,24 +7,6 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
-
-void persistance(Cache *db, std::string operated_key)
-{
-    std::string absolute_log_file_path = std::string(FLAGS_log_path) + "/" + std::string(FLAGS_log_file);
-    std::ofstream log;
-    log.open(absolute_log_file_path, std::ios::app);
-    Record<int> *operated_record = dynamic_cast<Record<int> *>(db->get(operated_key));
-    int time_elapsed = get_elapsed_seconds(operated_record);
-    if (log && time_elapsed < operated_record->ttl)
-    {
-        log << operated_record->type << " " << operated_key << " " << operated_record->get() << " " << operated_record->ttl - time_elapsed << std::endl;
-    }
-    else
-    {
-        std::cout << "Unable to record this operation in log file.\n";
-    }
-    log.close();
-}
 
 void cleaner(Cache *db)
 {
@@ -50,6 +31,9 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
+    char buff[1024];
+    memset(buff, '\0', sizeof(buff));
+
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0)
     {
@@ -123,6 +107,9 @@ void master(Cache *db)
         {
             if (FD_ISSET(client_sock[i], &readfds))
             {
+                recv(client_sock[i], buff, sizeof(buff), 0);
+                decode(buff, db);
+                send(client_sock[i], buff, sizeof(buff), 0);
             }
         }
     }
