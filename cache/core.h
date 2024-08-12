@@ -16,7 +16,8 @@ enum TYPE
     STRING,
 };
 
-enum COMMANDS{
+enum COMMANDS
+{
     SET,
     GET,
     PING,

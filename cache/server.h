@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-void persistance(Cache *, std::string);
 void cleaner(Cache *);
 void master(Cache *);
 void initialize(Cache *);
