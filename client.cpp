@@ -18,30 +18,45 @@ Client::Client(std::string server_ip, int port)
     connect(client_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 }
 
-void Client::ping()
+bool Client::ping()
 {
     encode(encoded_value, {std::to_string(static_cast<int>(PING))});
     send(client_sock, encoded_value, sizeof(encoded_value), 0);
     memset(encoded_value,'\0',sizeof(encoded_value));
+    recv(client_sock,encoded_value,sizeof(encoded_value),0);
+    if(encoded_value[0]=='+'){
+        return true;
+    }
+    return false;
 }
 
-void Client::get(std::string key)
+bool Client::get(std::string key)
 {
     encode(encoded_value, {std::to_string(static_cast<int>(GET)), key});
     send(client_sock, encoded_value, sizeof(encoded_value), 0);
     memset(encoded_value,'\0',sizeof(encoded_value));
+    recv(client_sock,encoded_value,sizeof(encoded_value),0);
+    if(encoded_value[0]=='+'){
+        return true;
+    }
+    return false;
 }
 
-void Client::set(std::string key, TYPE type, std::string value, int ttl)
+bool Client::set(std::string key, TYPE type, std::string value, int ttl)
 {
     encode(encoded_value, {std::to_string(static_cast<int>(SET)), key, std::to_string(static_cast<int>(type)), value, std::to_string(ttl)});
     send(client_sock, encoded_value, sizeof(encoded_value), 0);
     memset(encoded_value,'\0',sizeof(encoded_value));
+    recv(client_sock,encoded_value,sizeof(encoded_value),0);
+    if(encoded_value[0]=='+'){
+        return true;
+    }
+    return false;
 }
 
-void Client::set(std::string key, TYPE type, std::string value)
+bool Client::set(std::string key, TYPE type, std::string value)
 {
-    set(key, type, value, FLAGS_ttl);
+    return set(key, type, value, FLAGS_ttl);
 }
 
 void Client::close_connection()
