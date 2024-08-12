@@ -11,6 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Add the source files for the shared library
 set(SOURCES
+    client.cpp
     core.cpp
     server.cpp
     utils.cpp
@@ -18,6 +19,7 @@ set(SOURCES
 
 # Add the header file directory (optional, helps with IDEs)
 set(HEADERS
+    cache/client.h
     cache/core.h
     cache/server.h
     cache/utils.h
@@ -31,12 +33,15 @@ target_include_directories(Mycache PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 
 # Add the main source file
 add_executable(my_own_redis service.cpp)
+add_executable(test test.cpp)
 
 # Specify include directories for the executable
 target_include_directories(my_own_redis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
+target_include_directories(test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cache)
 
 # Link the executable with the Mycache library
 target_link_libraries(my_own_redis PRIVATE Mycache)
+target_link_libraries(test PRIVATE Mycache)
 
 # Platform-specific settings
 if(WIN32)

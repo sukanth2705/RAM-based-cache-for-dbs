@@ -107,6 +107,7 @@ void master(Cache *db)
         {
             if (FD_ISSET(client_sock[i], &readfds))
             {
+                recv(client_sock[i], buff, sizeof(buff), 0);
                 decode(buff, db);
                 send(client_sock[i], buff, sizeof(buff), 0);
             }

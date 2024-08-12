@@ -11,11 +11,11 @@
 
 class Client
 {
-    char encoded_value[1024];
     int client_sock;
     sockaddr_in serv_addr;
 
 public:
+    char encoded_value[1024];
     Client(std::string, int);
     bool ping();
     bool get(std::string);
