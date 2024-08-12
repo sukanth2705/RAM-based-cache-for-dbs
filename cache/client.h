@@ -4,7 +4,6 @@
 #include "core.h"
 #include "flags.h"
 #include "utils.h"
-#include "server.h"
 
 #include <vector>
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <string>
+#include <string.h>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
@@ -48,8 +49,11 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
-    char buff[1024] = "-OK\r\n";
+    char buff[1024];
+    memset(buff, '\0', sizeof(buff));
+    encode(buff, {"+jfdjs", "hhasvdvh", "hvdhvhjd", "hsjsja", "hyusdhsdhjgshd"});
     decode(buff);
+
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0)
     {
@@ -96,7 +100,7 @@ void master(Cache *db)
             max_fd = std::max(max_fd, client_sock[i]);
         }
         int activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
-        std::cout<<"hello"<<std::endl;
+        std::cout << "hello" << std::endl;
         if (activity < 0)
         {
             std::cout << "Error in select call" << std::endl;
