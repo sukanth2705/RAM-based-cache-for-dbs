@@ -53,16 +53,73 @@ void encode(char *encoded_value, std::vector<std::string> input)
     }
 }
 
-void handle_commands(int command, char *token, char *msg)
+void handle_commands(int command, char *token, char *msg, Cache *db)
 {
     COMMANDS cmd = static_cast<COMMANDS>(command);
     if (cmd == SET)
     {
         std::cout << "set" << std::endl;
+
     }
     else if (cmd == GET)
     {
         std::cout << "get" << std::endl;
+        token = strtok(NULL,"\r\n");
+        BaseRecord *answer;
+        answer = db->get(token);
+        TYPE anstyp = answer->type;
+        if (anstyp == STRING)
+        {
+            Record<std::string> *data;
+            data =dynamic_cast<Record<std::string> *>(answer);
+            if(data == nullptr)
+            {
+                encode(msg, {"-1"});
+                return;
+            }
+            else
+            {
+                std::string val = data->get();
+                std::string message = "+" + val;
+                encode(msg,{message});
+                return;
+            }
+
+        }
+        else if (anstyp == FLOAT)
+        {
+            Record<float> *data;
+            data = dynamic_cast<Record<float> *>(answer);
+            if(data == nullptr)
+            {
+                encode(msg, {"-1"});
+                return;
+            }
+            else
+            {
+                float val = data->get();
+                std::string message = "+" + std::to_string(val);
+                encode(msg,{message});
+                return;
+            }
+        }
+        else if (anstyp == INT)
+        {
+            Record<int> *data;
+            data = dynamic_cast<Record<int> *>(answer);
+            if(data == nullptr)
+            {
+                encode(msg, {"-1"});
+                return;
+            }
+            else
+            {
+                int val = data->get();
+                std::string message = "+" + std::to_string(val);
+                encode(msg,{message});
+                return;
+            }
+        }
     }
     else if (cmd == PING)
     {
@@ -81,5 +138,5 @@ void decode(char *msg,Cache* db)
         std::cout << token + 1 << std::endl;
         return;
     }
-    handle_commands(atoi(token), token, msg);
+    handle_commands(atoi(token), token, msg, db);
 }
