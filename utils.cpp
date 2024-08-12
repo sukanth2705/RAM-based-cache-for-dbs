@@ -107,6 +107,7 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
             db->set(key, data);
         }
         persistance(db, key);
+        encode(msg, {"+OK"});
     }
     else if (cmd == GET)
     {
@@ -122,14 +123,12 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
             if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 std::string val = data->get();
                 std::string message = "+" + val;
                 encode(msg, {message});
-                return;
             }
         }
         else if (anstyp == FLOAT)
@@ -139,14 +138,12 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
             if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 float val = data->get();
                 std::string message = "+" + std::to_string(val);
                 encode(msg, {message});
-                return;
             }
         }
         else if (anstyp == INT)
@@ -156,14 +153,12 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
             if (data == nullptr)
             {
                 encode(msg, {"-1"});
-                return;
             }
             else
             {
                 int val = data->get();
                 std::string message = "+" + std::to_string(val);
                 encode(msg, {message});
-                return;
             }
         }
     }

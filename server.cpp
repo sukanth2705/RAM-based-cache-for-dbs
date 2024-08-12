@@ -31,6 +31,9 @@ void cleaner(Cache *db)
 
 void master(Cache *db)
 {
+    char buff[1024];
+    memset(buff, '\0', sizeof(buff));
+
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0)
     {
@@ -104,6 +107,8 @@ void master(Cache *db)
         {
             if (FD_ISSET(client_sock[i], &readfds))
             {
+                decode(buff, db);
+                send(client_sock[i], buff, sizeof(buff), 0);
             }
         }
     }
