@@ -59,7 +59,36 @@ void handle_commands(int command, char *token, char *msg, Cache *db)
     if (cmd == SET)
     {
         std::cout << "set" << std::endl;
+        std::string key, type_str, value, ttl;
+        key = strtok(NULL,"\r\n");
+        type_str = strtok(NULL,"\r\n");
+        value = strtok(NULL, "\r\n");
+        ttl = strtok(NULL,"\r\n");
+        int TTL = std::stoi(ttl);
+        int t = std::stoi(type_str);
+        TYPE type = static_cast<TYPE>(t);
+        if (type == STRING)
+        {
+            std::string val = value;
+            Record<std::string> data(val,TTL);
+            db->set(key,&data);
+            return;
+        }
+        else if (type == FLOAT)
+        {
+            float val = std::stof(value);
+            Record<float> data(val,TTL);
+            db->set(key, &data);
+            return;
 
+        }
+        else if (type == INT)
+        {
+            int val = std::stoi(value);
+            Record<int> data(val,TTL);
+            db->set(key,&data);
+            return;
+        }
     }
     else if (cmd == GET)
     {
