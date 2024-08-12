@@ -32,27 +32,28 @@ std::vector<std::string> random_sample(Cache *db)
     return sample;
 }
 
-void encode(char *encodedValue, std::vector<std::string> input)
-{
-    int val_index = 0;
-    for (int i = 0; i < input.size(); i++)
-    {
-        for (int j = 0; j < input[i].size(); j++)
-        {
-            encodedValue[val_index++] = input[i][j];
-        }
-        encodedValue[val_index++] = '\r';
-        encodedValue[val_index++] = '\n';
-    }
-}
-
 int set_non_blocking(int fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
     return fcntl(fd, F_SETFL, O_NONBLOCK | flags);
 }
 
-void handle_commands(int command, char *token)
+void encode(char *encoded_value, std::vector<std::string> input)
+{
+    memset(encoded_value, '\0', sizeof(encoded_value));
+    int val_index = 0;
+    for (int i = 0; i < input.size(); i++)
+    {
+        for (int j = 0; j < input[i].size(); j++)
+        {
+            encoded_value[val_index++] = input[i][j];
+        }
+        encoded_value[val_index++] = '\r';
+        encoded_value[val_index++] = '\n';
+    }
+}
+
+void handle_commands(int command, char *token, char *msg)
 {
     COMMANDS cmd = static_cast<COMMANDS>(command);
     if (cmd == SET)
@@ -65,11 +66,11 @@ void handle_commands(int command, char *token)
     }
     else if (cmd == PING)
     {
-        std::cout << "ping" << std::endl;
+        encode(msg, {"+PONG"});
     }
 }
 
-void decode(const char *msg)
+void decode(char *msg,Cache* db)
 {
     char buff[1024];
     memset(buff, '\0', sizeof(buff));
@@ -80,5 +81,5 @@ void decode(const char *msg)
         std::cout << token + 1 << std::endl;
         return;
     }
-    handle_commands(atoi(token), token);
+    handle_commands(atoi(token), token, msg);
 }

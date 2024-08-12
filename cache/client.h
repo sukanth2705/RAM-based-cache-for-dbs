@@ -7,14 +7,15 @@
 
 #include <vector>
 
-class Client {
-    public :
-        char encodedValue[1024];
-        bool send();
-        std::string receive();
-        void open();
-        void close();
-        void encoder(std::string input);
+class Client
+{
+    char encodedValue[1024];
+
+public:
+    bool send();
+    void receive();
+    void open();
+    void close();
 };
 
 #endif
