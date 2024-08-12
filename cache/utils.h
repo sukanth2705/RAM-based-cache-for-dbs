@@ -11,6 +11,6 @@ int get_elapsed_seconds(Record<int> *);
 std::vector<std::string> random_sample(Cache *);
 void encode(char *encodedValue, std::vector<std::string> input);
 int set_non_blocking(int);
-void decode(const char *);
+void decode(const char *, Cache *);
 
 #endif

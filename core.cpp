@@ -115,21 +115,21 @@ void Cache::reconstruct()
                         int timeToLive = std::stoi(ttl);
                         if (t == INT)
                         {
-                            int insertValue = std::stoi(data);
-                            Record<int> val(insertValue);
-                            Cache::set(key, &val);
+                            int insert_value = std::stoi(data);
+                            Record<int> *val = new Record<int>(insert_value, timeToLive);
+                            Cache::set(key, val);
                         }
                         else if (t == FLOAT)
                         {
-                            float insertValue = std::stof(data);
-                            Record<float> val(insertValue);
-                            Cache::set(key, &val);
+                            float insert_value = std::stof(data);
+                            Record<float> *val = new Record<float>(insert_value, timeToLive);
+                            Cache::set(key, val);
                         }
                         else if (t == STRING)
                         {
-                            std::string insertValue = data;
-                            Record<std::string> val(insertValue);
-                            Cache::set(key, &val);
+                            std::string insert_value = data;
+                            Record<std::string> *val = new Record<std::string>(insert_value, timeToLive);
+                            Cache::set(key, val);
                         }
                     }
                     std::cout << "Cache reconstructed from the log file\n";
