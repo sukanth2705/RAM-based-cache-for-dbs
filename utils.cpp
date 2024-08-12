@@ -19,6 +19,10 @@ int get_elapsed_seconds(Record<int> *record)
 std::vector<std::string> random_sample(Cache *db)
 {
     std::vector<std::string> sample;
+    if (db->num_keys == 0)
+    {
+        return sample;
+    }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, db->num_keys - 1);
@@ -70,7 +74,7 @@ void handle_commands(int command, char *token, char *msg)
     }
 }
 
-void decode(char *msg,Cache* db)
+void decode(char *msg, Cache *db)
 {
     char buff[1024];
     memset(buff, '\0', sizeof(buff));
